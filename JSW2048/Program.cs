@@ -15,29 +15,71 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
         }
     }
 
+    public class Grid
+    {
+        private Tile[,] _tiles;
+        public int RemainedTiles
+        {
+            get
+            {
+                int counter = 0;
+                for (int y = 0; y < 4; y++)
+                {
+                    for (int x = 0; x < 4; x++)
+                    {
+                        if (this._tiles[y, x] == null)
+                        {
+                            counter += 1;
+                        }
+                    }
+                }
+                return counter;
+            }
+        }
 
+        public Tile this[int y, int x]
+        {
+            get
+            {
+                return _tiles[y, x];
+            }
+            set
+            {
+                _tiles[y, x] = value;
+            }
+        }
+
+
+        public Grid(Tile[,] tiles)
+        {
+            if (tiles.GetLength(0) != 4 || tiles.GetLength(1) != 4)
+            {
+                throw new ArgumentException();
+            }
+            this._tiles = tiles;
+        }
+
+        public Grid():this(new Tile[4,4])
+        {
+
+        }
+    }
 
 
     public class GameManager
     {
         private Random random;
-        public Tile[,] grid;
-        public int remainedTiles;
-        public GameManager(Tile[,] grid, int remainedTile, Random random)
+        public Grid grid;
+        //public int remainedTiles;
+        public GameManager(Grid grid, Random random)
         {
             this.grid = grid;
-            this.remainedTiles = remainedTile;
             this.random = random;
         }
-        public GameManager(Random random) : this(new Tile[4, 4], 0, random)
+        public GameManager(Random random) : this(new Grid(new Tile[4, 4]), random)
         {
-            if (grid.GetLength(0) != 4 || grid.GetLength(1) != 4)
-            {
-                throw new ArgumentException();
-            }
-            remainedTiles = 16;
-            SetRandomTile();
-            SetRandomTile();
+            SetRandomTile(this.grid);
+            SetRandomTile(this.grid);
         }
         public GameManager() : this(new Random())
         {
@@ -45,9 +87,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
         }
 
 
-        public Tile SetRandomTile()
+        public Tile SetRandomTile(Grid grid)
         {
-            while (remainedTiles > 0)
+            while (grid.RemainedTiles > 0)
             {
                 int x = random.Next(4);
                 int y = random.Next(4);
@@ -55,29 +97,29 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 {
                     Tile tile = new Tile(y, x, random.NextDouble() > 0.9 ? 4 : 2);
                     grid[y, x] = tile;
-                    remainedTiles -= 1;
                     return tile;
                 }
             }
             return null;
         }
 
-        public Tile[,] RotateRight(Tile[,] grid)
+        public Grid RotateRight(Grid grid)
         {
-            Tile[,] newGrid = new Tile[4, 4];
+            Tile[,] newTiles = new Tile[4, 4];
             for (int y = 0; y < 4; y++)
             {
                 for (int x = 0; x < 4; x++)
                 {
                     if (grid[y, x] != null)
                     {
-                        grid[y, x].y = x;
-                        grid[y, x].x = 3 - y;
-                        newGrid[x, 3 - y] = grid[y, x];
+                        //grid[y, x].y = x;
+                        //grid[y, x].x = 3 - y;
+                        //newTiles[x, 3 - y] = grid[y, x];
+                        newTiles[x, 3 - y] = new Tile(x, 3 - y, grid[y, x].value);
                     }
                 }
             }
-            return newGrid;
+            return new Grid(newTiles);
         }
 
         public IEnumerable<Tile> MergeColumn(IEnumerable<Tile> column)
@@ -90,7 +132,6 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                     Tile newTile = new Tile(tmp[i - 1].y, tmp[i - 1].x, 2 * tmp[i - 1].value);
                     tmp.RemoveAt(i - 1);
                     tmp.RemoveAt(i - 1);
-                    remainedTiles += 1;
                     tmp.Insert(i - 1, newTile);
                     return tmp;
                 }
@@ -98,9 +139,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             return column;
         }
 
-        public Tile[,] MergeGrid(Tile[,] grid)
+        public Grid MergeGrid(Grid grid)
         {
-            Tile[,] newGrid = new Tile[4, 4];
+            Tile[,] newTiles = new Tile[4, 4];
             for (int x = 0; x < 4; x++)
             {
                 List<Tile> column = new List<Tile>();
@@ -114,21 +155,21 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 int start = 3;
                 foreach (Tile t in MergeColumn(column))
                 {
-                    newGrid[start--, t.x] = t;
+                    newTiles[start--, t.x] = t;
                 }
             }
-            return newGrid;
+            return new Grid(newTiles);
         }
 
 
-        public Tile[,] MoveDown(Tile[,] grid)
+        public Grid MoveDown(Grid grid)
         {
             return MergeGrid(grid);
         }
 
-        public Tile[,] MoveRight(Tile[,] grid)
+        public Grid MoveRight(Grid grid)
         {
-            Tile[,] tmp;
+            Grid tmp;
             tmp = RotateRight(grid);
             tmp = MergeGrid(tmp);
             tmp = RotateRight(tmp);
@@ -136,9 +177,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             tmp = RotateRight(tmp);
             return tmp;
         }
-        public Tile[,] MoveUp(Tile[,] grid)
+        public Grid MoveUp(Grid grid)
         {
-            Tile[,] tmp;
+            Grid tmp;
             tmp = RotateRight(grid);
             tmp = RotateRight(tmp);
             tmp = MergeGrid(tmp);
@@ -147,9 +188,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             return tmp;
         }
 
-        public Tile[,] MoveLeft(Tile[,] grid)
+        public Grid MoveLeft(Grid grid)
         {
-            Tile[,] tmp;
+            Grid tmp;
             tmp = RotateRight(grid);
             tmp = RotateRight(tmp);
             tmp = RotateRight(tmp);
@@ -160,7 +201,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
 
         public bool IsGameOver(Tile[,] grid)
         {
-            MoveDown(grid)
+            return false;
         }
 
 

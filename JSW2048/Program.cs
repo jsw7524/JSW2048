@@ -60,7 +60,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             this.score = score;
         }
 
-        public Grid(long score=0) :this(new Tile[4,4], score)
+        public Grid(long score = 0) : this(new Tile[4, 4], score)
         {
 
         }
@@ -122,23 +122,25 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             }
             return new Grid(newTiles);
         }
-
-        public IEnumerable<Tile> MergeColumn(IEnumerable<Tile> column)
+        public Tuple<List<Tile>, long> MergeColumn(IEnumerable<Tile> column)
         {
+            long localScore = 0;
             List<Tile> tmp = column.ToList();
             for (int i = 1; i < tmp.Count; i++)
             {
                 if (tmp[i].value == tmp[i - 1].value)
                 {
                     Tile newTile = new Tile(tmp[i - 1].y, tmp[i - 1].x, 2 * tmp[i - 1].value);
+                    localScore += newTile.value;
                     tmp.RemoveAt(i - 1);
                     tmp.RemoveAt(i - 1);
                     tmp.Insert(i - 1, newTile);
-                    return tmp;
+                    return Tuple.Create(tmp, localScore);
                 }
             }
-            return column;
+            return Tuple.Create(tmp, localScore);
         }
+
 
         public Grid MergeGrid(Grid grid)
         {
@@ -154,9 +156,11 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                     }
                 }
                 int start = 3;
-                foreach (Tile t in MergeColumn(column))
+                Tuple<List<Tile>, long> tuple = MergeColumn(column);
+                grid.score += tuple.Item2;
+                foreach (Tile t in tuple.Item1)
                 {
-                    newTiles[start--, t.x] = t;
+                    newTiles[start--, x] = t;
                 }
             }
             return new Grid(newTiles);

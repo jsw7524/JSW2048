@@ -35,7 +35,7 @@ namespace TestProject1
         {
             GameManager gameManager = new GameManager();
             List<Tile> data = new List<Tile>() { new Tile(0, 2, 8), new Tile(1, 2, 8), new Tile(2, 2, 8) };
-            List<Tile> result = gameManager.MergeColumn(data).ToList();
+            List<Tile> result = gameManager.MergeColumn(data).Item1.ToList();
             Assert.AreEqual(16, result[0].value);
             Assert.AreEqual(8, result[1].value);
             Assert.AreEqual(2, result.Count);
@@ -46,25 +46,25 @@ namespace TestProject1
         {
             GameManager gameManager = new GameManager();
             List<Tile> data = new List<Tile>() { new Tile(0, 3, 4), new Tile(1, 3, 2), new Tile(2, 3, 2), new Tile(3, 3, 2) };
-            List<Tile> result = gameManager.MergeColumn(data).ToList();
+            List<Tile> result = gameManager.MergeColumn(data).Item1.ToList();
             Assert.AreEqual(4, result[0].value);
             Assert.AreEqual(4, result[1].value);
             Assert.AreEqual(2, result[2].value);
             Assert.AreEqual(3, result.Count);
         }
 
+
         [TestMethod]
         public void TestMethod5()
         {
             GameManager gameManager = new GameManager();
             List<Tile> data = new List<Tile>() { new Tile(0, 1, 2), new Tile(1, 1, 32), new Tile(2, 1, 2) };
-            List<Tile> result = gameManager.MergeColumn(data).ToList();
+            List<Tile> result = gameManager.MergeColumn(data).Item1.ToList();
             Assert.AreEqual(2, result[0].value);
             Assert.AreEqual(32, result[1].value);
             Assert.AreEqual(2, result[2].value);
             Assert.AreEqual(3, result.Count);
         }
-
 
         [TestMethod]
         public void TestMethod6()
@@ -91,7 +91,7 @@ namespace TestProject1
             grid[3, 3] = new Tile(3, 3, 4);
             GameManager gameManager = new GameManager(grid, new Random(7524));
 
-            Grid result =gameManager.MergeGrid(grid);
+            Grid result = gameManager.MergeGrid(grid);
 
             Assert.AreEqual(16, result[3, 2].value);
             Assert.AreEqual(4, result[2, 3].value);
@@ -173,7 +173,7 @@ namespace TestProject1
             Assert.AreEqual(null, result[2, 0]?.value);
             Assert.AreEqual(8, result[3, 0]?.value);
             //
-            Assert.AreEqual(null,result[0, 1]?.value);
+            Assert.AreEqual(null, result[0, 1]?.value);
             Assert.AreEqual(2, result[1, 1]?.value);
             Assert.AreEqual(32, result[2, 1]?.value);
             Assert.AreEqual(2, result[3, 1]?.value);

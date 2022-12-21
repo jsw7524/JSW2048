@@ -49,17 +49,18 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             }
         }
 
-
-        public Grid(Tile[,] tiles)
+        public long score;
+        public Grid(Tile[,] tiles, long score = 0)
         {
             if (tiles.GetLength(0) != 4 || tiles.GetLength(1) != 4)
             {
                 throw new ArgumentException();
             }
             this._tiles = tiles;
+            this.score = score;
         }
 
-        public Grid():this(new Tile[4,4])
+        public Grid(long score=0) :this(new Tile[4,4], score)
         {
 
         }
@@ -199,7 +200,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             return tmp;
         }
 
-        public bool IsGameOver(Tile[,] grid)
+        public bool IsGameOver(Grid grid)
         {
             return false;
         }

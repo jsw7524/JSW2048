@@ -280,5 +280,62 @@ namespace TestProject1
             //
             Assert.AreEqual(5, result.RemainedTiles);
         }
+
+        [TestMethod]
+        public void TestMethod11()
+        {
+            Grid grid = new Grid();
+            grid[0, 0] = null;
+            grid[1, 0] = null;
+            grid[2, 0] = null;
+            grid[3, 0] = new Tile(3, 0, 8);
+            //
+            grid[0, 1] = null;
+            grid[1, 1] = new Tile(1, 1, 2);
+            grid[2, 1] = new Tile(2, 1, 32);
+            grid[3, 1] = new Tile(3, 1, 2);
+            //
+            grid[0, 2] = null;
+            grid[1, 2] = new Tile(1, 2, 8);
+            grid[2, 2] = new Tile(2, 2, 8);
+            grid[3, 2] = new Tile(3, 2, 8);
+            //
+            grid[0, 3] = new Tile(0, 3, 2);
+            grid[1, 3] = new Tile(1, 3, 2);
+            grid[2, 3] = new Tile(2, 3, 2);
+            grid[3, 3] = new Tile(3, 3, 4);
+            GameManager gameManager = new GameManager(grid, new Random(7524));
+            bool result = gameManager.IsGameOver(grid);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        public void TestMethod12()
+        {
+            Grid grid = new Grid();
+            grid[0, 0] = new Tile(0, 0, 4); ;
+            grid[1, 0] = new Tile(1, 0, 16); ;
+            grid[2, 0] = new Tile(2, 0, 4); ;
+            grid[3, 0] = new Tile(3, 0, 2);
+            //
+            grid[0, 1] = new Tile(0, 1, 8);
+            grid[1, 1] = new Tile(1, 1, 256);
+            grid[2, 1] = new Tile(2, 1, 32);
+            grid[3, 1] = new Tile(3, 1, 4);
+            //
+            grid[0, 2] = new Tile(0, 2, 64);
+            grid[1, 2] = new Tile(1, 2, 32);
+            grid[2, 2] = new Tile(2, 2, 64);
+            grid[3, 2] = new Tile(3, 2, 16);
+            //
+            grid[0, 3] = new Tile(0, 3, 2);
+            grid[1, 3] = new Tile(1, 3, 4);
+            grid[2, 3] = new Tile(2, 3, 16);
+            grid[3, 3] = new Tile(3, 3, 2);
+            GameManager gameManager = new GameManager(grid, new Random(7524));
+            bool result = gameManager.IsGameOver(grid);
+            Assert.IsTrue(result);
+        }
+
     }
 }

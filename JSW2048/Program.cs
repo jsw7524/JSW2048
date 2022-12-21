@@ -206,15 +206,17 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
 
         public bool IsGameOver(Grid grid)
         {
+            if (grid.RemainedTiles==0 
+                && MoveLeft(grid).score == 0 
+                && MoveDown(grid).score == 0 
+                && MoveRight(grid).score == 0 
+                && MoveUp(grid).score == 0)
+            {
+                return true;
+            }
             return false;
         }
-
-
-
     }
-
-
-
 
 
     internal class Program

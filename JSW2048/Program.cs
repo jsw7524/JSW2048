@@ -2,6 +2,13 @@
 
 namespace JSW2048 // Note: actual namespace depends on the project name.
 {
+    public enum Direction
+    {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
+    }
     public class Tile
     {
         public long value;
@@ -18,6 +25,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
     public class Grid
     {
         private Tile[,] _tiles;
+        public bool isGameOver;
         public int RemainedTiles
         {
             get
@@ -58,6 +66,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             }
             this._tiles = tiles;
             this.score = score;
+            this.isGameOver = false;
         }
 
         public Grid(long score = 0) : this(new Tile[4, 4], score)
@@ -71,7 +80,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
     {
         private Random random;
         public Grid grid;
-        //public int remainedTiles;
+
         public GameManager(Grid grid, Random random)
         {
             this.grid = grid;
@@ -113,14 +122,11 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 {
                     if (grid[y, x] != null)
                     {
-                        //grid[y, x].y = x;
-                        //grid[y, x].x = 3 - y;
-                        //newTiles[x, 3 - y] = grid[y, x];
                         newTiles[x, 3 - y] = new Tile(x, 3 - y, grid[y, x].value);
                     }
                 }
             }
-            return new Grid(newTiles);
+            return new Grid(newTiles, grid.score);
         }
         public Tuple<List<Tile>, long> MergeColumn(IEnumerable<Tile> column)
         {
@@ -163,7 +169,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                     newTiles[start--, x] = t;
                 }
             }
-            return new Grid(newTiles);
+            return new Grid(newTiles, grid.score);
         }
 
 
@@ -204,30 +210,39 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             return tmp;
         }
 
+        public bool isSame(Grid a, Grid b)
+        {
+            for (int y = 0; y < 4; y++)
+            {
+                for (int x = 0; x < 4; x++)
+                {
+                    if ((a[y, x]?.value ?? 0) != (b[y, x]?.value ?? 0))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         public bool IsGameOver(Grid grid)
         {
-            if (grid.RemainedTiles==0 
-                && MoveLeft(grid).score == 0 
-                && MoveDown(grid).score == 0 
-                && MoveRight(grid).score == 0 
-                && MoveUp(grid).score == 0)
+            if (grid.RemainedTiles == 0
+                && MoveLeft(grid).score == grid.score
+                && MoveDown(grid).score == grid.score
+                && MoveRight(grid).score == grid.score
+                && MoveUp(grid).score == grid.score)
             {
+                grid.isGameOver = true;
                 return true;
             }
             return false;
         }
 
-        public enum Direction
-        {
-            UP,
-            DOWN,
-            LEFT,
-            RIGHT
-        }
 
         public Tuple<bool, Grid> RunTurn(Grid grid, Direction direction)
         {
-            Grid nextTurnGrid=null;
+            Grid nextTurnGrid = null;
             switch (direction)
             {
                 case Direction.UP:
@@ -243,8 +258,15 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                     nextTurnGrid = MoveRight(grid);
                     break;
             }
-            bool isEnd = IsGameOver(nextTurnGrid);
-            return Tuple.Create(isEnd, nextTurnGrid);
+            if (IsGameOver(nextTurnGrid))
+            {
+                return Tuple.Create(false, nextTurnGrid);
+            }
+            if (!isSame(nextTurnGrid, grid))
+            {
+                SetRandomTile(nextTurnGrid);
+            }
+            return Tuple.Create(true, nextTurnGrid);
         }
     }
 

@@ -2,10 +2,40 @@
 using JSW2048;
 namespace JSW2048 // Note: actual namespace depends on the project name.
 {
+
+
+
+    public class GaAI
+    {
+        Random random = new Random();   
+        public Direction GetDirection()
+        {
+            double p=random.NextDouble();
+            if (p < 0.25)
+            {
+                return Direction.UP;
+            }
+            else if (p < 0.5)
+            {
+                return Direction.LEFT;
+            }
+            else if (p < 0.75)
+            {
+                return Direction.DOWN;
+            }
+            else
+            {
+                return Direction.RIGHT;
+            }
+        }
+    }
+
+
     internal class Program
     {
         static void Main(string[] args)
         {
+            GaAI gaAI = new GaAI();
             GameManager gm = new GameManager();
             Grid currentGrid = gm.grid;
             while (true)
@@ -21,32 +51,18 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                     Console.WriteLine();
                 }
                 Console.WriteLine();
-                var ch = Console.ReadKey(false).Key;
-                var direction = Direction.UP;
-                switch (ch)
-                {
-                    case ConsoleKey.Escape:
-                        return;
-                    case ConsoleKey.UpArrow:
-                        direction=Direction.UP;
-                        break;
-                    case ConsoleKey.DownArrow:
-                        direction = Direction.DOWN;
-                        break;
-                    case ConsoleKey.LeftArrow:
-                        direction = Direction.LEFT;
-                        break;
-                    case ConsoleKey.RightArrow:
-                        direction = Direction.RIGHT;
-                        break;
-                }
-                var result=gm.RunTurn(currentGrid, direction);
-                if (false==result.Item1)
+
+                Direction direction = gaAI.GetDirection();
+                var result = gm.RunTurn(currentGrid, direction);
+                if (false == result.Item1)
                 {
                     Console.WriteLine("Game Over!");
                     return;
                 }
                 currentGrid = result.Item2;
+
+                //Thread.Sleep(1000);
+
             }
         }
     }

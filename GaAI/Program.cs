@@ -3,9 +3,20 @@ using JSW2048;
 namespace JSW2048 // Note: actual namespace depends on the project name.
 {
 
+    public interface IDirectionProvider
+    {
+        public Direction GetDirection();
+    }
 
+    public class GaAI : IDirectionProvider
+    {
+        public Direction GetDirection()
+        {
+            throw new NotImplementedException();
+        }
+    }
 
-    public class GaAI
+    public class RandomAI: IDirectionProvider
     {
         Random random = new Random();   
         public Direction GetDirection()
@@ -35,7 +46,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
     {
         static void Main(string[] args)
         {
-            GaAI gaAI = new GaAI();
+            IDirectionProvider AI = new RandomAI();
             GameManager gm = new GameManager();
             Grid currentGrid = gm.grid;
             while (true)
@@ -52,7 +63,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 }
                 Console.WriteLine();
 
-                Direction direction = gaAI.GetDirection();
+                Direction direction = AI.GetDirection();
                 var result = gm.RunTurn(currentGrid, direction);
                 if (false == result.Item1)
                 {

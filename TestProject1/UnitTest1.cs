@@ -313,9 +313,9 @@ namespace TestProject1
         public void TestMethod12()
         {
             Grid grid = new Grid();
-            grid[0, 0] = new Tile(0, 0, 4); ;
-            grid[1, 0] = new Tile(1, 0, 16); ;
-            grid[2, 0] = new Tile(2, 0, 4); ;
+            grid[0, 0] = new Tile(0, 0, 4);
+            grid[1, 0] = new Tile(1, 0, 16);
+            grid[2, 0] = new Tile(2, 0, 4); 
             grid[3, 0] = new Tile(3, 0, 2);
             //
             grid[0, 1] = new Tile(0, 1, 8);

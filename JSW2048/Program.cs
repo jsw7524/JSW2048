@@ -216,6 +216,36 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             }
             return false;
         }
+
+        public enum Direction
+        {
+            UP,
+            DOWN,
+            LEFT,
+            RIGHT
+        }
+
+        public Tuple<bool, Grid> RunTurn(Grid grid, Direction direction)
+        {
+            Grid nextTurnGrid=null;
+            switch (direction)
+            {
+                case Direction.UP:
+                    nextTurnGrid = MoveUp(grid);
+                    break;
+                case Direction.DOWN:
+                    nextTurnGrid = MoveDown(grid);
+                    break;
+                case Direction.LEFT:
+                    nextTurnGrid = MoveLeft(grid);
+                    break;
+                case Direction.RIGHT:
+                    nextTurnGrid = MoveRight(grid);
+                    break;
+            }
+            bool isEnd = IsGameOver(nextTurnGrid);
+            return Tuple.Create(isEnd, nextTurnGrid);
+        }
     }
 
 

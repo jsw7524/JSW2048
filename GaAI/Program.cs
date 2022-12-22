@@ -190,7 +190,8 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
         public long Benchmark(IDirectionProvider AI)
         {
             GameManager gm = new GameManager(random);
-            Grid currentGrid = gm.grid;
+            Grid currentGrid = new Grid();
+            gm.InitializeGrid(currentGrid);
             while (true)
             {
                 //show
@@ -216,10 +217,11 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             //IDirectionProvider AI = new GaAI();
             //benchmarker.Run(AI);
             //////////////////////////////////////
-
+            Random random = new Random(7524);
             IDirectionProvider AI = new GaAI();
-            GameManager gm = new GameManager();
-            Grid currentGrid = gm.grid;
+            GameManager gm = new GameManager(random);
+            Grid currentGrid = new Grid();
+            gm.InitializeGrid(currentGrid);
             while (true)
             {
                 //show

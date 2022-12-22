@@ -13,9 +13,11 @@ namespace TestProject1
         public void TestMethod1()
         {
             GameManager gameManager = new GameManager(new Random(7524));
-            Assert.AreEqual(2, gameManager.grid[0, 2].value);
-            Assert.AreEqual(4, gameManager.grid[1, 1].value);
-            Assert.AreEqual(14, gameManager.grid.RemainedTiles);
+            Grid grid = new Grid();
+            gameManager.InitializeGrid(grid);
+            Assert.AreEqual(2, grid[0, 2].value);
+            Assert.AreEqual(4, grid[1, 1].value);
+            Assert.AreEqual(14, grid.RemainedTiles);
         }
 
         [TestMethod]
@@ -24,16 +26,16 @@ namespace TestProject1
             Grid grid = new Grid(new Tile[4, 4]);
             grid[0, 2] = new Tile(0, 2, 512);
             grid[1, 1] = new Tile(1, 1, 8);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
-            Assert.AreEqual(512, gameManager.grid[0, 2].value);
-            Assert.AreEqual(8, gameManager.grid[1, 1].value);
-            Assert.AreEqual(14, gameManager.grid.RemainedTiles);
+            GameManager gameManager = new GameManager( new Random(7524));
+            Assert.AreEqual(512, grid[0, 2].value);
+            Assert.AreEqual(8, grid[1, 1].value);
+            Assert.AreEqual(14, grid.RemainedTiles);
         }
 
         [TestMethod]
         public void TestMethod3()
         {
-            GameManager gameManager = new GameManager();
+            GameManager gameManager = new GameManager(new Random(7524));
             List<Tile> data = new List<Tile>() { new Tile(0, 2, 8), new Tile(1, 2, 8), new Tile(2, 2, 8) };
             List<Tile> result = gameManager.MergeColumn(data).Item1.ToList();
             Assert.AreEqual(16, result[0].value);
@@ -44,7 +46,7 @@ namespace TestProject1
         [TestMethod]
         public void TestMethod4()
         {
-            GameManager gameManager = new GameManager();
+            GameManager gameManager = new GameManager(new Random(7524));
             List<Tile> data = new List<Tile>() { new Tile(0, 3, 4), new Tile(1, 3, 2), new Tile(2, 3, 2), new Tile(3, 3, 2) };
             List<Tile> result = gameManager.MergeColumn(data).Item1.ToList();
             Assert.AreEqual(4, result[0].value);
@@ -57,7 +59,7 @@ namespace TestProject1
         [TestMethod]
         public void TestMethod5()
         {
-            GameManager gameManager = new GameManager();
+            GameManager gameManager = new GameManager(new Random(7524));
             List<Tile> data = new List<Tile>() { new Tile(0, 1, 2), new Tile(1, 1, 32), new Tile(2, 1, 2) };
             List<Tile> result = gameManager.MergeColumn(data).Item1.ToList();
             Assert.AreEqual(2, result[0].value);
@@ -89,7 +91,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 2);
             grid[2, 3] = new Tile(2, 3, 2);
             grid[3, 3] = new Tile(3, 3, 4);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager( new Random(7524));
 
             Grid result = gameManager.MergeGrid(grid);
 
@@ -124,7 +126,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 2);
             grid[2, 3] = new Tile(2, 3, 2);
             grid[3, 3] = new Tile(3, 3, 4);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager(new Random(7524));
 
             Grid result = gameManager.RotateRight(grid);
 
@@ -164,7 +166,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 2);
             grid[2, 3] = new Tile(2, 3, 2);
             grid[3, 3] = new Tile(3, 3, 4);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager( new Random(7524));
 
             Grid result = gameManager.MoveRight(grid);
 
@@ -204,7 +206,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 2);
             grid[2, 3] = new Tile(2, 3, 2);
             grid[3, 3] = new Tile(3, 3, 4);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager( new Random(7524));
 
             Grid result = gameManager.MoveUp(grid);
 
@@ -254,7 +256,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 2);
             grid[2, 3] = new Tile(2, 3, 2);
             grid[3, 3] = new Tile(3, 3, 4);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager( new Random(7524));
 
             Grid result = gameManager.MoveLeft(grid);
 
@@ -304,7 +306,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 2);
             grid[2, 3] = new Tile(2, 3, 2);
             grid[3, 3] = new Tile(3, 3, 4);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager( new Random(7524));
             bool result = gameManager.IsGameOver(grid);
             Assert.IsFalse(result);
         }
@@ -332,7 +334,7 @@ namespace TestProject1
             grid[1, 3] = new Tile(1, 3, 4);
             grid[2, 3] = new Tile(2, 3, 16);
             grid[3, 3] = new Tile(3, 3, 2);
-            GameManager gameManager = new GameManager(grid, new Random(7524));
+            GameManager gameManager = new GameManager( new Random(7524));
             bool result = gameManager.IsGameOver(grid);
             Assert.IsTrue(result);
         }

@@ -6,8 +6,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
     {
         static void Main(string[] args)
         {
-            GameManager gm = new GameManager();
-            Grid currentGrid = gm.grid;
+            GameManager gm = new GameManager(new Random());
+            Grid currentGrid = new Grid();
+            gm.InitializeGrid(currentGrid);
             while (true)
             {
                 //show

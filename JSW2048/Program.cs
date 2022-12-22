@@ -79,23 +79,28 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
     public class GameManager
     {
         private Random random;
-        public Grid grid;
+        //public Grid grid;
 
-        public GameManager(Grid grid, Random random)
+        //public GameManager(Grid grid, Random random)
+        //{
+        //    this.grid = grid;
+        //    this.random = random;
+        //}
+        //public GameManager(Random random) : this(new Grid(new Tile[4, 4]), random)
+        //{
+        //    SetRandomTile(this.grid);
+        //    SetRandomTile(this.grid);
+        //}
+        public GameManager(Random random) 
         {
-            this.grid = grid;
             this.random = random;
         }
-        public GameManager(Random random) : this(new Grid(new Tile[4, 4]), random)
-        {
-            SetRandomTile(this.grid);
-            SetRandomTile(this.grid);
-        }
-        public GameManager() : this(new Random())
-        {
 
+        public void InitializeGrid(Grid grid)
+        {
+            SetRandomTile(grid);
+            SetRandomTile(grid);
         }
-
 
         public Tile SetRandomTile(Grid grid)
         {

@@ -11,7 +11,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
     public class GaAI : IDirectionProvider
     {
         public Random random = new Random(7893);
-
+        public double[,] inputLayer = new double[16, 1];
+        public double[,] hidenLayer1;
+        public double[,] outputLayer;
         public double[,] SetRandomLayer(int row, int col)
         {
             double[,] layer = new double[row, col];
@@ -84,9 +86,14 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
 
         public Direction GetDirection(Grid grid)
         {
-            double[,] inputLayer = new double[16, 1];
-            double[,] hidenLayer1 = SetRandomLayer(8, 16);
-            double[,] outputLayer = SetRandomLayer(4, 8);
+            if (hidenLayer1 == null)
+            {
+                hidenLayer1 = SetRandomLayer(8, 16);
+            }
+            if (outputLayer == null)
+            {
+                outputLayer = SetRandomLayer(4, 8);
+            }
             //flaten
             for (int y = 0; y < 4; y++)
             {

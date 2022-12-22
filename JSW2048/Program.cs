@@ -150,6 +150,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
 
         public Grid MergeGrid(Grid grid)
         {
+            long scoreTmp = grid.score;
             Tile[,] newTiles = new Tile[4, 4];
             for (int x = 0; x < 4; x++)
             {
@@ -163,13 +164,13 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 }
                 int start = 3;
                 Tuple<List<Tile>, long> tuple = MergeColumn(column);
-                grid.score += tuple.Item2;
+                scoreTmp += tuple.Item2;
                 foreach (Tile t in tuple.Item1)
                 {
                     newTiles[start--, x] = t;
                 }
             }
-            return new Grid(newTiles, grid.score);
+            return new Grid(newTiles, scoreTmp);
         }
 
 

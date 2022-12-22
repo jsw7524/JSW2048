@@ -83,7 +83,21 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 return result;
             }
         }
-
+        public bool isSame(Grid a, Grid b)
+        {
+            for (int y = 0; y < 4; y++)
+            {
+                for (int x = 0; x < 4; x++)
+                {
+                    if ((a[y, x]?.value ?? 0) != (b[y, x]?.value ?? 0))
+                    {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        Grid lastGrid=new Grid();
         public Direction GetDirection(Grid grid)
         {
             if (hidenLayer1 == null)
@@ -124,6 +138,11 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                     maxDir = d;
                 }
             }
+            if (isSame(lastGrid, grid))
+            {
+                maxDir = random.Next(4);
+            }
+            lastGrid=grid;
             switch (maxDir)
             {
                 case 0:
@@ -217,7 +236,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             //IDirectionProvider AI = new GaAI();
             //benchmarker.Run(AI);
             //////////////////////////////////////
-            Random random = new Random(7524);
+            Random random = new Random();
             IDirectionProvider AI = new GaAI();
             GameManager gm = new GameManager(random);
             Grid currentGrid = new Grid();

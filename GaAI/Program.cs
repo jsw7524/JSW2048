@@ -97,17 +97,17 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             }
             return true;
         }
-        Grid lastGrid=new Grid();
+
+        public GaAI(double[,] a = null, double[,] b = null)
+        {
+            hidenLayer1 = a ?? SetRandomLayer(8, 16);
+            outputLayer = b ?? SetRandomLayer(4, 8);
+        }
+
+        Grid lastGrid = new Grid();
         public Direction GetDirection(Grid grid)
         {
-            if (hidenLayer1 == null)
-            {
-                hidenLayer1 = SetRandomLayer(8, 16);
-            }
-            if (outputLayer == null)
-            {
-                outputLayer = SetRandomLayer(4, 8);
-            }
+
             //flaten
             for (int y = 0; y < 4; y++)
             {
@@ -121,13 +121,13 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
 
                 }
             }
-            //
+            //forward 
             double[,] tmp;
             tmp = MultiplyMatrix(hidenLayer1, inputLayer);
             tmp = Relu(tmp);
             tmp = MultiplyMatrix(outputLayer, tmp);
-
             double[,] result = SoftMax(tmp);
+            //choose direction
             double maxTmp = 0.0;
             int maxDir = 0;
             for (int d = 0; d < 4; d++)
@@ -142,7 +142,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             {
                 maxDir = random.Next(4);
             }
-            lastGrid=grid;
+            lastGrid = grid;
             switch (maxDir)
             {
                 case 0:
@@ -195,7 +195,7 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
             this.random = random;
         }
 
-        public void Run(IDirectionProvider AI, int loopTimes = 30)
+        public double Run(IDirectionProvider AI, int loopTimes = 30)
         {
             List<long> results = new List<long>();
             for (int i = 0; i < loopTimes; i++)
@@ -203,7 +203,9 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
                 results.Add(Benchmark(AI));
 
             }
-            Console.WriteLine(results.Average());
+            double tmpScore = results.Average();
+            Console.WriteLine(tmpScore);
+            return tmpScore;
         }
 
         public long Benchmark(IDirectionProvider AI)
@@ -226,47 +228,134 @@ namespace JSW2048 // Note: actual namespace depends on the project name.
         }
     }
 
+    class GeneScore
+    {
+        public double Score;
+        public GaAI ai;
+        public GeneScore(double Score, GaAI ai)
+        {
+            this.Score = Score;
+            this.ai = ai;
+        }
+    }
+
+    class GaFarm
+    {
+
+        Random random;
+
+        Benchmarker benchmarker;
+        int size;
+        public GaFarm(int size)
+        {
+            random = new Random(7524);
+            //geneScores = new List<GeneScore>();
+            benchmarker = new Benchmarker(random);
+            this.size = size;
+        }
+        public void Init(List<GeneScore> geneScores)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                GaAI ai = new GaAI();
+                geneScores.Add(new GeneScore(benchmarker.Run(ai), ai));
+            }
+        }
+
+        public IEnumerable<GeneScore> SelectBest(int topN, List<GeneScore> geneScores)
+        {
+            return geneScores.OrderByDescending(g => g.Score).Take(topN);
+        }
+
+        public IEnumerable<GeneScore> Mate(List<GeneScore> pool, List<GeneScore> geneScores)
+        {
+            int poolSize = pool.Count();
+            //double rate = random.NextDouble();
+            double rate = 0.5;
+            geneScores.Clear();
+            for (int k = 0; k < size; k++)
+            {
+                int i = random.Next(poolSize);
+                int j = random.Next(poolSize);
+                double[,] newA = new double[8, 16];
+                for (int y = 0; y < 8; y++)
+                {
+                    for (int x = 0; x < 16; x++)
+                    {
+                        newA[y, x] = pool[i].ai.hidenLayer1[y, x] * rate + pool[j].ai.hidenLayer1[y, x] * (1.0 - rate);
+                    }
+                }
+
+                double[,] newB = new double[4, 8];
+                for (int y = 0; y < 4; y++)
+                {
+                    for (int x = 0; x < 8; x++)
+                    {
+                        newB[y, x] = pool[i].ai.outputLayer[y, x] * rate + pool[j].ai.outputLayer[y, x] * (1.0 - rate);
+                    }
+                }
+                GaAI ai = new GaAI(newA, newB);
+                geneScores.Add(new GeneScore(benchmarker.Run(ai), ai));
+            }
+            return geneScores;
+        }
+
+    }
+
 
     internal class Program
     {
         static void Main(string[] args)
         {
+            List<GeneScore> genes = new List<GeneScore>();
+            GaFarm gaFarm = new GaFarm(50);
+            gaFarm.Init(genes);
+
+            for (int k=0;k<100;k++)
+            {
+                Console.WriteLine(k);
+                var pool=gaFarm.SelectBest(5, genes).ToList();
+                gaFarm.Mate(pool, genes);
+            }
+            genes=genes.OrderByDescending(g => g.Score).ToList();
+            int yyy = 1;
+
             //Random random = new Random(7524);
             //Benchmarker benchmarker = new Benchmarker(random);
             //IDirectionProvider AI = new GaAI();
             //benchmarker.Run(AI);
             //////////////////////////////////////
-            Random random = new Random();
-            IDirectionProvider AI = new GaAI();
-            GameManager gm = new GameManager(random);
-            Grid currentGrid = new Grid();
-            gm.InitializeGrid(currentGrid);
-            while (true)
-            {
-                //show
-                Console.WriteLine(currentGrid.score);
-                for (int y = 0; y < 4; y++)
-                {
-                    for (int x = 0; x < 4; x++)
-                    {
-                        Console.Write($"{((currentGrid[y, x]?.value) ?? 0),-5}");
-                    }
-                    Console.WriteLine();
-                }
-                Console.WriteLine();
+            //Random random = new Random();
+            //IDirectionProvider AI = new GaAI();
+            //GameManager gm = new GameManager(random);
+            //Grid currentGrid = new Grid();
+            //gm.InitializeGrid(currentGrid);
+            //while (true)
+            //{
+            //    //show
+            //    Console.WriteLine(currentGrid.score);
+            //    for (int y = 0; y < 4; y++)
+            //    {
+            //        for (int x = 0; x < 4; x++)
+            //        {
+            //            Console.Write($"{((currentGrid[y, x]?.value) ?? 0),-5}");
+            //        }
+            //        Console.WriteLine();
+            //    }
+            //    Console.WriteLine();
 
-                Direction direction = AI.GetDirection(currentGrid);
-                var result = gm.RunTurn(currentGrid, direction);
-                if (false == result.Item1)
-                {
-                    Console.WriteLine("Game Over!");
-                    return;
-                }
-                currentGrid = result.Item2;
+            //    Direction direction = AI.GetDirection(currentGrid);
+            //    var result = gm.RunTurn(currentGrid, direction);
+            //    if (false == result.Item1)
+            //    {
+            //        Console.WriteLine("Game Over!");
+            //        return;
+            //    }
+            //    currentGrid = result.Item2;
 
-                //Thread.Sleep(1000);
+            //    //Thread.Sleep(1000);
 
-            }
+            //}
         }
     }
 }
